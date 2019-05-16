@@ -42,9 +42,10 @@ module.exports = function(app, passport) {
     })
   );
 
+  const host = process.env.HOST || 'wisyl.com';
   app.use(
     cors({
-      origin: ['http://localhost:3000', 'https://reboil-demo.herokuapp.com'],
+      origin: [`http://localhost:3000`, `https://${host}`],
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
       credentials: true
     })
