@@ -10,7 +10,7 @@ head(prefix="og: http://ogp.me/ns# nodejsexpressdemo: http://ogp.me/ns/apps/node
   meta(property="fb:app_id", content="293989217296609")
   meta(property="og:title", content=pkg.name + ' - ' + title)
   meta(property="og:description", content=pkg.description)
-  meta(property="og:url", content="https://wisyl.com")
+  meta(property="og:url", content=pkg.url)
   meta(property="og:site_name", content="Wisyl")
   meta(property="fb:admins", content="1037213945")
 
@@ -18,7 +18,7 @@ head(prefix="og: http://ogp.me/ns# nodejsexpressdemo: http://ogp.me/ns/apps/node
     link(href="/css/bootstrap.min.css", rel="stylesheet")
     link(href="/css/jquery.tagsinput.css", rel="stylesheet")
     link(href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", rel="stylesheet")
-    link(rel="stylesheet", href="/css/app.css")
+    link(href="/css/app.css", rel="stylesheet")
 
   //
      HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries
