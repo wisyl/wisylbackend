@@ -9,8 +9,6 @@ const dotenv = require('dotenv');
 const join = require('path').join;
 const express = require('express');
 const mongoose = require('mongoose');
-const passport = require('passport');
-const config = require('./config');
 
 // .env
 dotenv.config();
@@ -43,9 +41,8 @@ models.forEach(it => {
 });
 
 // Bootstrap routes
-require('./config/passport')(passport);
-require('./config/express')(app, passport);
-require('./config/routes')(app, passport);
+require('./config/express')(app);
+require('./config/routes')(app);
 
 connect();
 
@@ -57,6 +54,8 @@ function listen() {
 }
 
 function connect() {
+  const config = require('./config');
+
   mongoose.connection
     .on('error', console.log)
     .on('disconnected', connect)

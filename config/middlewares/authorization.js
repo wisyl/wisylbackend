@@ -1,6 +1,40 @@
 'use strict';
 
 /*
+ *  Parse token and set req.user & req.role
+ */
+const { wrap: async } = require('co');
+const constant = require('../constant');
+
+exports.parseToken = async(function*(req, res, next) {
+  if (req.headers && req.headers.token) {
+    const token = req.headers.token;
+    const mongoose = require('mongoose');
+    try {
+      const AdmToken = mongoose.model('AdmToken');
+      req.user = AdmToken.load(token).user;
+      if (req.user) req.role = constant.role.admin;
+      return next();
+    } catch (err) {}
+    //try {
+    //  const AdmToken = mongoose.model('AdmToken');
+    //  req.user = AdmToken.load(token).user;
+    //  if (req.user) req.role = constant.role.admin;
+    //  return next();
+    //} catch (err) {}
+    //try {
+    //  const AdmToken = mongoose.model('AdmToken');
+    //  req.user = AdmToken.load(token).user;
+    //  if (req.user) req.role = constant.role.admin;
+    //  return next();
+    //} catch (err) {}
+  }
+
+  next();
+});
+
+
+/*
  *  Generic require login routing middleware
  */
 

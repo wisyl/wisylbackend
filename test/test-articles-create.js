@@ -40,7 +40,7 @@ test('POST /articles - when not logged in - should redirect to /login', t => {
 // login
 test('User login', t => {
   agent
-    .post('/users/session')
+    .post('/login')
     .field('email', _user.email)
     .field('password', _user.password)
     .expect('Location', '/')
