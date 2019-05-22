@@ -42,10 +42,13 @@ module.exports = function(app, passport) {
     users.session
   );
   app.get('/users/:userId', users.show);
+  // github auth
   app.get('/auth/github', pauth('github', fail), users.signin);
   app.get('/auth/github/callback', pauth('github', fail), users.authCallback);
+  // twitter auth
   app.get('/auth/twitter', pauth('twitter', fail), users.signin);
   app.get('/auth/twitter/callback', pauth('twitter', fail), users.authCallback);
+  // google auth
   app.get(
     '/auth/google',
     pauth('google', {
@@ -58,6 +61,7 @@ module.exports = function(app, passport) {
     users.signin
   );
   app.get('/auth/google/callback', pauth('google', fail), users.authCallback);
+  // linkedin auth
   app.get(
     '/auth/linkedin',
     pauth('linkedin', {
@@ -66,11 +70,7 @@ module.exports = function(app, passport) {
     }),
     users.signin
   );
-  app.get(
-    '/auth/linkedin/callback',
-    pauth('linkedin', fail),
-    users.authCallback
-  );
+  app.get('/auth/linkedin/callback', pauth('linkedin', fail), users.authCallback);
 
   app.param('userId', users.load);
 

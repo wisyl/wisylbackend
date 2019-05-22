@@ -332,10 +332,10 @@ ASALocalRun/
 .mfractor/
 
 # Environment file
-# .env
+*.env*
 
 # Uploads
 public/uploads
 
-# Design
-design/
+# Package lock
+package-lock.json
