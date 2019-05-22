@@ -5,8 +5,7 @@
  */
 
 const Notifier = require('notifier');
-const pug = require('pug');
-const config = require('../../config');
+const config = require('../../../config');
 
 /**
  * Process the templates using swig - refer to notifier#processTemplate method
@@ -19,6 +18,7 @@ const config = require('../../config');
 
 Notifier.prototype.processTemplate = function(tplPath, locals) {
   locals.filename = tplPath;
+  const pug = require('pug');
   return pug.renderFile(tplPath, locals);
 };
 
@@ -39,11 +39,26 @@ module.exports = {
     const article = options.article;
     const author = article.user;
     const user = options.currentUser;
-    const notifier = new Notifier(config.notifier);
+    const notifierOptions = {
+      tplPath: path.join(__dirname, '..', 'app/admin/mailer/templates'),
+
+      service: 'postmark', // or 'sendgrid'
+      key: 'SERVICE_KEY',
+      email: true,
+      actions: ['comment'],
+      sendgridUser: 'SENDGRID_USER',
+
+      // for apple push notifications
+      APN: false,
+      //parseAppId: 'APP_ID',
+      //parseApiKey: 'MASTER_KEY',
+      //parseChannels: ['USER_' + author._id.toString()]
+    };
+    const notifier = new Notifier(notifierOptions);
 
     const obj = {
       to: author.email,
-      from: 'your@product.com',
+      from: process.env.EMAIL_NOREPLY,
       subject: user.name + ' added a comment on your article ' + article.title,
       alert: user.name + ' says: "' + options.comment,
       locals: {
@@ -53,12 +68,6 @@ module.exports = {
         article: article.name
       }
     };
-
-    // for apple push notifications
-    /*notifier.use({
-      APN: true
-      parseChannels: ['USER_' + author._id.toString()]
-    })*/
 
     try {
       notifier.send('comment', obj, cb);
