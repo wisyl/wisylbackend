@@ -22,8 +22,6 @@ for (let k in envConfig) {
   process.env[k] = envConfig[k];
 }
 
-const models = join(__dirname, 'app/models');
-const port = process.env.PORT || 3000;
 const app = express();
 
 /**
@@ -33,9 +31,16 @@ const app = express();
 module.exports = app;
 
 // Bootstrap models
-fs.readdirSync(models)
-  .filter(file => ~file.search(/^[^.].*\.js$/))
-  .forEach(file => require(join(models, file)));
+const models = [
+  join(__dirname, 'app/admin/models'),
+  join(__dirname, 'app/organization/models'),
+  join(__dirname, 'app/recipient/models'),
+];
+models.forEach(it => {
+  fs.readdirSync(it)
+    .filter(file => ~file.search(/^[^.].*\.js$/))
+    .forEach(file => require(join(it, file)));
+});
 
 // Bootstrap routes
 require('./config/passport')(passport);
@@ -46,6 +51,7 @@ connect();
 
 function listen() {
   if (app.get('env') === 'test') return;
+  const port = process.env.PORT || 3000;
   app.listen(port);
   console.log('Express app started on port ' + port);
 }
