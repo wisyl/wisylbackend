@@ -1,5 +1,7 @@
 {
   "name": "wisyl-admin-app",
+  "description": "Wisyl Admin App",
+  "url": "https://wisyl.com",
   "version": "0.3.0",
   "private": false,
   "engines": {
@@ -9,6 +11,7 @@
     "type": "git",
     "url": "https://github.com/adydas/wisylbackend.git"
   },
+  "keywords": ["Wisyl", "Admin", "CMS", "Message", "Social", "Organization"],
   "license": "MIT",
   "scripts": {
     "start": "cross-env nodemon server.js",
@@ -17,7 +20,6 @@
     "pretest": "eslint .",
     "prod": "pm2-runtime start ecosystem.config.js --env production"
   },
-  "description": "wisylbackend",
   "author": "prodev9999@gmail.com (https://github.com/prodev9999)",
   "dependencies": {
     "acorn": "^6.1.1",
