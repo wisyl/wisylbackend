@@ -17,7 +17,9 @@ module.exports = new TwitterStrategy(
   {
     consumerKey: config.twitter.clientID,
     consumerSecret: config.twitter.clientSecret,
-    callbackURL: config.twitter.callbackURL
+    callbackURL: config.twitter.callbackURL,
+    userProfileURL: 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
+    passReqToCallback: true,
   },
   function(accessToken, refreshToken, profile, done) {
     const options = {
@@ -28,6 +30,7 @@ module.exports = new TwitterStrategy(
       if (!user) {
         user = new User({
           name: profile.displayName,
+          email: profile.emails[0].value,
           username: profile.username,
           provider: 'twitter',
           twitter: profile._json
