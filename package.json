@@ -1,6 +1,6 @@
 {
-  "name": "wisyl-admin-app",
-  "description": "Wisyl Admin App",
+  "name": "wisyl",
+  "description": "This project exposes Restful APIs for Organization & Recipient Apps and the regarding CMS website.",
   "url": "https://wisyl.com",
   "version": "0.3.0",
   "private": false,
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/adydas/wisylbackend.git"
   },
-  "keywords": ["Wisyl", "Admin", "CMS", "Message", "Social", "Organization"],
+  "keywords": ["wisyl", "admin", "CMS", "message", "social", "organization", "recipient", "schedul", "channel", "group"],
   "license": "MIT",
   "scripts": {
     "start": "cross-env nodemon server.js",
