@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 
-const apis = {
+const controllers = {
+  dashboard: require('../app/controllers/dashboard'),
   admins: require('../app/controllers/admins'),
 };
 
@@ -30,21 +31,21 @@ module.exports = function (app, passport) {
 
 
   // CMS
-  app.param('adminId', apis.admins.load);
-  app.get('/', apis.admins.login); // this should be CMS dashboard
-  app.get('/login', apis.admins.login);
-  app.get('/signup', apis.admins.signup);
-  app.get('/logout', apis.admins.logout);
-  app.post('/admins', apis.admins.create);
+  app.param('adminId', controllers.admins.load);
+  app.get('/', middlewares.auth.requiresLogin, controllers.dashboard.index);
+  app.get('/login', controllers.admins.login);
+  app.get('/signup', controllers.admins.signup);
+  app.get('/logout', controllers.admins.logout);
+  app.post('/admins', controllers.admins.create);
   app.post(
     '/admins/session',
     pauth('local', {
       failureRedirect: '/login',
       failureFlash: 'Invalid email or password.'
     }),
-    apis.admins.session
+    controllers.admins.session
   );
-  app.get('/admins/:adminId', middlewares.auth.requiresLogin, apis.admins.show);
+  app.get('/admins/:adminId', middlewares.auth.requiresLogin, controllers.admins.show);
 
   /**
    * Error handling

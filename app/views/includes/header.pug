@@ -1,14 +1,21 @@
 nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
-  a.navbar-brand(href='/') Dashboard
+  a.navbar-brand(href='/') Wisyl
   button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarCollapse' aria-controls='navbarCollapse' aria-expanded='false' aria-label='Toggle navigation')
     span.navbar-toggler-icon
-  #navbarCollapse.collapse.navbar-collapse
+  #navbarCollapse.collapse.navbar-collapse.w-100.order-1.order-md-0.dual-collapse2
     ul.navbar-nav.mr-auto
+      li.nav-item(class=isActive('/cms/admins') ? 'active nav-item' : 'nav-item')
+        a.nav-link(href="/cms/admins") Administrators
+      li.nav-item(class=isActive('/cms/orgs') ? 'active nav-item' : 'nav-item')
+        a.nav-link(href="/cms/orgs") Organizations
+      li.nav-item(class=isActive('/cms/rpcs') ? 'active nav-item' : 'nav-item')
+        a.nav-link(href="/cms/rpcs") Recipients
+    ul.navbar-nav.ml-auto
       - if (req.isAuthenticated())
         li.nav-item(class=isActive(`/admins/${req.user.id}`) && 'active')
-          a.nav-link(href="/admins/"+req.user.id, title="Profile") Profile
+          a.nav-link(href="/admins/"+req.user.id)=req.user.name
         li.nav-item
-          a.nav-link(href="/logout", title="logout") Logout
+          a.nav-link(href="/logout") Logout
       - else
         li(class=isActive('/login') ? 'active nav-item' : 'nav-item')
-          a.nav-link(href="/login", title="Login") Login
+          a.nav-link(href="/login") Login

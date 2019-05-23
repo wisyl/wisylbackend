@@ -56,7 +56,7 @@ exports.show = function(req, res) {
   const admin = req.profile;
   res.render('admins/show', {
     title: admin.name,
-    admin: admin
+    admin
   });
 };
 
