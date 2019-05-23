@@ -9,6 +9,7 @@ const dotenv = require('dotenv');
 const join = require('path').join;
 const express = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
 
 // .env
 dotenv.config();
@@ -29,20 +30,15 @@ const app = express();
 module.exports = app;
 
 // Bootstrap models
-const models = [
-  join(__dirname, 'app/admin/models'),
-  join(__dirname, 'app/organization/models'),
-  join(__dirname, 'app/recipient/models'),
-];
-models.forEach(it => {
-  fs.readdirSync(it)
-    .filter(file => ~file.search(/^[^.].*\.js$/))
-    .forEach(file => require(join(it, file)));
-});
+const models = join(__dirname, 'app/models');
+fs.readdirSync(models)
+  .filter(file => ~file.search(/^[^.].*\.js$/))
+  .forEach(file => require(join(models, file)));
 
 // Bootstrap routes
-require('./config/express')(app);
-require('./config/routes')(app);
+require('./config/passport')(passport);
+require('./config/express')(app, passport);
+require('./config/routes')(app, passport);
 
 connect();
 

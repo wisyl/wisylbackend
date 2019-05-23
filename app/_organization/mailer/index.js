@@ -40,7 +40,7 @@ module.exports = {
     const author = article.user;
     const user = options.currentUser;
     const notifierOptions = {
-      tplPath: path.join(__dirname, '..', 'app/admin/mailer/templates'),
+      tplPath: path.join(__dirname, '..', 'app/mailer/templates'),
 
       service: 'postmark', // or 'sendgrid'
       key: 'SERVICE_KEY',

@@ -13,7 +13,7 @@ const Schema = mongoose.Schema;
  * User Schema
  */
 
-const UserSchema = new Schema({
+const AdminSchema = new Schema({
   name: String,
   email: String,
   hashed_password: String,
@@ -26,7 +26,7 @@ const validatePresenceOf = value => value && value.length;
  * Virtuals
  */
 
-UserSchema.virtual('password')
+AdminSchema.virtual('password')
   .set(function(password) {
     this._password = password;
     this.salt = this.makeSalt();
@@ -42,16 +42,13 @@ UserSchema.virtual('password')
 
 // the below 5 validations only apply if you are signing up traditionally
 
-UserSchema.path('name').validate(validatePresenceOf, 'Name cannot be blank');
+AdminSchema.path('name').validate(validatePresenceOf, 'Name cannot be blank');
 
-UserSchema.path('email').validate(function(email) {
-  var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  return validatePresenceOf(email) && emailRegex.test(email.text);
-}, 'Email cannot be blank');
+AdminSchema.path('email').validate(validatePresenceOf, 'Email cannot be blank');
 
-UserSchema.path('email').validate(function(email) {
+AdminSchema.path('email').validate(function(email) {
   return new Promise(resolve => {
-    const User = mongoose.model('AdmUser');
+    const User = mongoose.model('Admin');
 
     // Check only when it is a new user or when email field is modified
     if (this.isNew || this.isModified('email')) {
@@ -60,7 +57,7 @@ UserSchema.path('email').validate(function(email) {
   });
 }, 'Email `{VALUE}` already exists');
 
-UserSchema.path('hashed_password').validate(function(hashed_password) {
+AdminSchema.path('hashed_password').validate(function(hashed_password) {
   return hashed_password.length && this._password.length;
 }, 'Password cannot be blank');
 
@@ -68,7 +65,7 @@ UserSchema.path('hashed_password').validate(function(hashed_password) {
  * Pre-save hook
  */
 
-UserSchema.pre('save', function(next) {
+AdminSchema.pre('save', function(next) {
   if (!this.isNew) return next();
 
   if (!validatePresenceOf(this.password)) {
@@ -82,7 +79,7 @@ UserSchema.pre('save', function(next) {
  * Methods
  */
 
-UserSchema.methods = {
+AdminSchema.methods = {
   /**
    * Authenticate - check if the passwords are the same
    *
@@ -131,7 +128,7 @@ UserSchema.methods = {
  * Statics
  */
 
-UserSchema.statics = {
+AdminSchema.statics = {
   /**
    * Load
    *
@@ -148,4 +145,4 @@ UserSchema.statics = {
   }
 };
 
-mongoose.model('AdmUser', UserSchema);
+mongoose.model('Admin', AdminSchema);

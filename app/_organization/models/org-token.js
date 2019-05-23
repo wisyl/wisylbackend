@@ -12,9 +12,9 @@ const Schema = mongoose.Schema;
  * Token Schema
  */
 
-const TokenSchema = new Schema({
+const OrgTokenSchema = new Schema({
   token: String,
-  user: { type: Schema.ObjectId, ref: 'AdmUser' },
+  user: { type: Schema.ObjectId, ref: 'Organization' },
   lastUsedAt: { type: Date, default: Date.now }
 });
 
@@ -26,7 +26,7 @@ const TokenSchema = new Schema({
  * Methods
  */
 
-TokenSchema.methods = {
+OrgTokenSchema.methods = {
   
   /**
    * Update lastUsedAt
@@ -44,7 +44,7 @@ TokenSchema.methods = {
  * Statics
  */
 
-TokenSchema.statics = {
+OrgTokenSchema.statics = {
   /**
    * Find token by id
    *
@@ -80,4 +80,4 @@ TokenSchema.statics = {
   }
 };
 
-mongoose.model('AdmToken', TokenSchema);
+mongoose.model('OrgToken', OrgTokenSchema);

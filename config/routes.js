@@ -4,42 +4,50 @@
  * Module dependencies.
  */
 
-const admin = {
-  users: require('../app/admin/controllers/users'),
-}
+const apis = {
+  admins: require('../app/controllers/admins'),
+};
 
 /**
  * Route middlewares
  */
 
-const auth = require('./middlewares/authorization');
-const init = require('./middlewares/init');
+const middlewares = {
+  auth: require('./middlewares/authorization'),
+  init: require('./middlewares/init'),
+};
 
 /**
  * Expose routes
  */
 
-module.exports = function (app) {
-  app.use((req, res, next) => {
-    console.log('test');
-    next();
-  });
-  app.use(init.apiResponse);
-  app.use(auth.parseToken);
+module.exports = function (app, passport) {
+  const pauth = passport.authenticate.bind(passport);
 
-  app.param('adminId', admin.users.load);
+  // middleware
+  app.use(middlewares.init.apiResponse);
+  app.use(middlewares.auth.parseToken);
+
+  app.param('adminId', apis.admins.load);
 
   // home route
-  app.get('/', admin.users.login);
+  app.get('/', apis.admins.login);
 
   // user routes
-  app.get('/admin/login', admin.users.login);
-  app.get('/admin/signup', admin.users.signup);
-  app.get('/admin/logout', admin.users.logout);
-  app.post('/admin/login', admin.users.signin);
-  app.post('/admin/users', admin.users.create);
-  app.get('/admin/users/:adminId', admin.users.show);
-  
+  app.get('/login', apis.admins.login);
+  app.get('/signup', apis.admins.signup);
+  app.get('/logout', apis.admins.logout);
+  app.post('/admins', apis.admins.create);
+  app.post(
+    '/admins/session',
+    pauth('local', {
+      failureRedirect: '/login',
+      failureFlash: 'Invalid email or password.'
+    }),
+    apis.admins.session
+  );
+  app.get('/admins/:adminId', middlewares.auth.requiresLogin, apis.admins.show);
+
   /**
    * Error handling
    */

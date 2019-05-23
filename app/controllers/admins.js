@@ -6,16 +6,16 @@
 
 const mongoose = require('mongoose');
 const { wrap: async } = require('co');
-const User = mongoose.model('User');
+const Admin = mongoose.model('Admin');
 
 /**
- * Load
+ * Load admin
  */
 
 exports.load = async(function*(req, res, next, _id) {
   const criteria = { _id };
   try {
-    req.profile = yield User.load({ criteria });
+    req.profile = yield Admin.load({ criteria });
     if (!req.profile) return next(new Error('User not found'));
   } catch (err) {
     return next(err);
@@ -24,15 +24,14 @@ exports.load = async(function*(req, res, next, _id) {
 });
 
 /**
- * Create user
+ * Create admin
  */
 
 exports.create = async(function*(req, res) {
-  const user = new User(req.body);
-  user.provider = 'local';
+  const admin = new Admin(req.body);
   try {
-    yield user.save();
-    req.logIn(user, err => {
+    yield admin.save();
+    req.logIn(admin, err => {
       if (err) req.flash('info', 'Sorry! We are not able to log you in!');
       res.redirect('/');
     });
@@ -41,10 +40,10 @@ exports.create = async(function*(req, res) {
       field => err.errors[field].message
     );
 
-    res.render('users/signup', {
+    res.render('admins/signup', {
       title: 'Sign up',
       errors,
-      user
+      admin
     });
   }
 });
@@ -54,19 +53,20 @@ exports.create = async(function*(req, res) {
  */
 
 exports.show = function(req, res) {
-  const user = req.profile;
-  res.render('users/show', {
-    title: user.name,
-    user: user
+  const admin = req.profile;
+  res.render('admins/show', {
+    title: admin.name,
+    admin: admin
   });
 };
+
 
 /**
  * Show login form
  */
 
 exports.login = function(req, res) {
-  res.render('users/login', {
+  res.render('admins/login', {
     title: 'Login'
   });
 };
@@ -76,9 +76,9 @@ exports.login = function(req, res) {
  */
 
 exports.signup = function(req, res) {
-  res.render('users/signup', {
+  res.render('admins/signup', {
     title: 'Sign up',
-    user: new User()
+    admin: new Admin()
   });
 };
 
@@ -95,12 +95,14 @@ exports.logout = function(req, res) {
  * Session
  */
 
+exports.session = login;
+
 /**
- * Signin
+ * Login
  */
 
-exports.signin = function (req, res) {
+function login(req, res) {
   const redirectTo = req.session.returnTo ? req.session.returnTo : '/';
   delete req.session.returnTo;
   res.redirect(redirectTo);
-};
+}
