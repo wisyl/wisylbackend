@@ -7,6 +7,7 @@
 const mongoose = require('mongoose');
 const { wrap: async } = require('co');
 const Admin = mongoose.model('Admin');
+const constant = require('../../config/constant');
 
 /**
  * Load admin
@@ -111,6 +112,23 @@ function login(req, res) {
  * List
  */
 
-exports.list = function (req, res) {
+exports.list = async(function* (req, res) {
+  const page = (req.query.page > 0 ? req.query.page : 1) - 1;
+  const limit = req.query.limit || constant.pageLimit;
+  const _id = req.query.item;
+  const options = {
+    limit,
+    page
+  };
 
-};
+  if (_id) options.criteria = { _id };
+
+  const admins = yield Admin.list(options);
+  const count = yield Admin.countDocuments();
+  res.render('admins/list', {
+    title: 'Administrators',
+    admins,
+    page: page + 1,
+    pages: Math.ceil(count / limit)
+  });
+});
