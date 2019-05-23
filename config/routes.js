@@ -46,6 +46,9 @@ module.exports = function (app, passport) {
     controllers.admins.session
   );
   app.get('/admins/:adminId', middlewares.auth.requiresLogin, controllers.admins.show);
+  app.get('/cms/admins', middlewares.auth.requiresLogin, controllers.admins.list);
+  app.get('/cms/orgs', middlewares.auth.requiresLogin, controllers.orgs.list);
+  app.get('/cms/rcps', middlewares.auth.requiresLogin, controllers.rcps.list);
 
   /**
    * Error handling
@@ -73,7 +76,7 @@ module.exports = function (app, passport) {
   });
 
   // assume 404 since no middleware responded
-  app.use(function(req, res) {
+  app.use(function (req, res) {
     const payload = {
       url: req.originalUrl,
       error: 'Not found'

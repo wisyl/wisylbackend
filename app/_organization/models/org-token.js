@@ -34,7 +34,7 @@ OrgTokenSchema.methods = {
    * @api private
    */
 
-  updateLastUsedAt: function() {
+  updateLastUsedAt: function () {
     this.lastUsedAt = Date.now();
     return this.save();
   }
@@ -52,7 +52,7 @@ OrgTokenSchema.statics = {
    * @api private
    */
 
-  load: function(token) {
+  load: function (token) {
     return this.findOne({ token: token })
       .populate('user', 'name email')
       .exec();

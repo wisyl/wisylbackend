@@ -54,7 +54,7 @@ exports.index = async(function*(req, res) {
  * New article
  */
 
-exports.new = function(req, res) {
+exports.new = function (req, res) {
   res.render('articles/new', {
     title: 'New Article',
     article: new Article()
@@ -85,7 +85,7 @@ exports.create = async(function*(req, res) {
  * Edit an article
  */
 
-exports.edit = function(req, res) {
+exports.edit = function (req, res) {
   res.render('articles/edit', {
     title: 'Edit ' + req.article.title,
     article: req.article
@@ -115,7 +115,7 @@ exports.update = async(function*(req, res) {
  * Show
  */
 
-exports.show = function(req, res) {
+exports.show = function (req, res) {
   res.render('articles/show', {
     title: req.article.title,
     article: req.article

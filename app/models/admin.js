@@ -27,12 +27,12 @@ const validatePresenceOf = value => value && value.length;
  */
 
 AdminSchema.virtual('password')
-  .set(function(password) {
+  .set(function (password) {
     this._password = password;
     this.salt = this.makeSalt();
     this.hashed_password = this.encryptPassword(password);
   })
-  .get(function() {
+  .get(function () {
     return this._password;
   });
 
@@ -46,7 +46,7 @@ AdminSchema.path('name').validate(validatePresenceOf, 'Name cannot be blank');
 
 AdminSchema.path('email').validate(validatePresenceOf, 'Email cannot be blank');
 
-AdminSchema.path('email').validate(function(email) {
+AdminSchema.path('email').validate(function (email) {
   return new Promise(resolve => {
     const User = mongoose.model('Admin');
 
@@ -57,7 +57,7 @@ AdminSchema.path('email').validate(function(email) {
   });
 }, 'Email `{VALUE}` already exists');
 
-AdminSchema.path('hashed_password').validate(function(hashed_password) {
+AdminSchema.path('hashed_password').validate(function (hashed_password) {
   return hashed_password.length && this._password.length;
 }, 'Password cannot be blank');
 
@@ -65,7 +65,7 @@ AdminSchema.path('hashed_password').validate(function(hashed_password) {
  * Pre-save hook
  */
 
-AdminSchema.pre('save', function(next) {
+AdminSchema.pre('save', function (next) {
   if (!this.isNew) return next();
 
   if (!validatePresenceOf(this.password)) {
@@ -88,7 +88,7 @@ AdminSchema.methods = {
    * @api public
    */
 
-  authenticate: function(plainText) {
+  authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
 
@@ -99,7 +99,7 @@ AdminSchema.methods = {
    * @api public
    */
 
-  makeSalt: function() {
+  makeSalt: function () {
     return Math.round(new Date().valueOf() * Math.random()) + '';
   },
 
@@ -111,7 +111,7 @@ AdminSchema.methods = {
    * @api public
    */
 
-  encryptPassword: function(password) {
+  encryptPassword: function (password) {
     if (!password) return '';
     try {
       return crypto
@@ -137,7 +137,7 @@ AdminSchema.statics = {
    * @api private
    */
 
-  load: function(options, cb) {
+  load: function (options, cb) {
     options.select = options.select || 'name email';
     return this.findOne(options.criteria)
       .select(options.select)

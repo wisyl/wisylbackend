@@ -15,7 +15,7 @@ const co = require('co');
  * @api public
  */
 
-exports.cleanup = function(t) {
+exports.cleanup = function (t) {
   co(function*() {
     yield Admin.deleteMany();
     t.end();

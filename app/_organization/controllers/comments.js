@@ -10,7 +10,7 @@ const { wrap: async } = require('co');
  * Load comment
  */
 
-exports.load = function(req, res, next, id) {
+exports.load = function (req, res, next, id) {
   req.comment = req.article.comments.find(comment => comment.id === id);
 
   if (!req.comment) return next(new Error('Comment not found'));

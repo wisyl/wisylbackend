@@ -16,7 +16,7 @@ const config = require('../../../config');
  * @api public
  */
 
-Notifier.prototype.processTemplate = function(tplPath, locals) {
+Notifier.prototype.processTemplate = function (tplPath, locals) {
   locals.filename = tplPath;
   const pug = require('pug');
   return pug.renderFile(tplPath, locals);
@@ -35,7 +35,7 @@ module.exports = {
    * @api public
    */
 
-  comment: function(options, cb) {
+  comment: function (options, cb) {
     const article = options.article;
     const author = article.user;
     const user = options.currentUser;

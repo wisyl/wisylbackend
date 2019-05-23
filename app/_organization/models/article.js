@@ -50,7 +50,7 @@ ArticleSchema.path('body').required(true, 'Article body cannot be blank');
  * Pre-remove hook
  */
 
-ArticleSchema.pre('remove', function(next) {
+ArticleSchema.pre('remove', function (next) {
   // const imager = new Imager(imagerConfig, 'S3');
   // const files = this.image.files;
 
@@ -74,7 +74,7 @@ ArticleSchema.methods = {
    * @api private
    */
 
-  uploadAndSave: function(/*image*/) {
+  uploadAndSave: function (/*image*/) {
     const err = this.validateSync();
     if (err && err.toString()) throw new Error(err.toString());
     return this.save();
@@ -101,7 +101,7 @@ ArticleSchema.methods = {
    * @api private
    */
 
-  addComment: function(user, comment) {
+  addComment: function (user, comment) {
     this.comments.push({
       body: comment.body,
       user: user._id
@@ -125,7 +125,7 @@ ArticleSchema.methods = {
    * @api private
    */
 
-  removeComment: function(commentId) {
+  removeComment: function (commentId) {
     const index = this.comments.map(comment => comment.id).indexOf(commentId);
 
     if (~index) this.comments.splice(index, 1);
@@ -146,7 +146,7 @@ ArticleSchema.statics = {
    * @api private
    */
 
-  load: function(_id) {
+  load: function (_id) {
     return this.findOne({ _id })
       .populate('user', 'name email username')
       .populate('comments.user')
@@ -160,7 +160,7 @@ ArticleSchema.statics = {
    * @api private
    */
 
-  list: function(options) {
+  list: function (options) {
     const criteria = options.criteria || {};
     const page = options.page || 0;
     const limit = options.limit || 30;

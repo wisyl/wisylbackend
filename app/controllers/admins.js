@@ -52,7 +52,7 @@ exports.create = async(function*(req, res) {
  *  Show profile
  */
 
-exports.show = function(req, res) {
+exports.show = function (req, res) {
   const admin = req.profile;
   res.render('admins/show', {
     title: admin.name,
@@ -65,7 +65,7 @@ exports.show = function(req, res) {
  * Show login form
  */
 
-exports.login = function(req, res) {
+exports.login = function (req, res) {
   res.render('admins/login', {
     title: 'Login'
   });
@@ -75,7 +75,7 @@ exports.login = function(req, res) {
  * Show sign up form
  */
 
-exports.signup = function(req, res) {
+exports.signup = function (req, res) {
   res.render('admins/signup', {
     title: 'Sign up',
     admin: new Admin()
@@ -86,7 +86,7 @@ exports.signup = function(req, res) {
  * Logout
  */
 
-exports.logout = function(req, res) {
+exports.logout = function (req, res) {
   req.logout();
   res.redirect('/login');
 };
@@ -106,3 +106,11 @@ function login(req, res) {
   delete req.session.returnTo;
   res.redirect(redirectTo);
 }
+
+/**
+ * List
+ */
+
+exports.list = function (req, res) {
+
+};

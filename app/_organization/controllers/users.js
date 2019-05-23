@@ -53,7 +53,7 @@ exports.create = async(function*(req, res) {
  *  Show profile
  */
 
-exports.show = function(req, res) {
+exports.show = function (req, res) {
   const user = req.profile;
   res.render('users/show', {
     title: user.name,
@@ -65,7 +65,7 @@ exports.show = function(req, res) {
  * Show login form
  */
 
-exports.login = function(req, res) {
+exports.login = function (req, res) {
   res.render('users/login', {
     title: 'Login'
   });
@@ -75,7 +75,7 @@ exports.login = function(req, res) {
  * Show sign up form
  */
 
-exports.signup = function(req, res) {
+exports.signup = function (req, res) {
   res.render('users/signup', {
     title: 'Sign up',
     user: new User()
@@ -86,7 +86,7 @@ exports.signup = function(req, res) {
  * Logout
  */
 
-exports.logout = function(req, res) {
+exports.logout = function (req, res) {
   req.logout();
   res.redirect('/login');
 };
