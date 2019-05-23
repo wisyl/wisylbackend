@@ -26,14 +26,12 @@ module.exports = function (app, passport) {
 
   // middleware
   app.use(middlewares.init.apiResponse);
-  app.use(middlewares.auth.parseToken);
+  app.use(middlewares.init.parseToken);
 
+
+  // CMS
   app.param('adminId', apis.admins.load);
-
-  // home route
-  app.get('/', apis.admins.login);
-
-  // user routes
+  app.get('/', apis.admins.login); // this should be CMS dashboard
   app.get('/login', apis.admins.login);
   app.get('/signup', apis.admins.signup);
   app.get('/logout', apis.admins.logout);
@@ -52,7 +50,8 @@ module.exports = function (app, passport) {
    * Error handling
    */
 
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
+    
     // treat as 404
     if (
       err.message &&
@@ -79,7 +78,7 @@ module.exports = function (app, passport) {
       url: req.originalUrl,
       error: 'Not found'
     };
-    //if (req.accepts('json')) return res.status(404).json(payload);
+    if (req.accepts('json')) return res.status(404).json(payload);
     res.status(404).render('404', payload);
   });
 };
