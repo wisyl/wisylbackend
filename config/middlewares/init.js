@@ -8,7 +8,7 @@ const { wrap: async } = require('co');
 exports.apiResponse = function (req, res, next) {
   res.err = function (statusCode, payload) {
     res.status(statusCode);
-    if (req.headers.host === `${process.env.HOST}:${process.env.PORT}`) {
+    if (~process.env.HOSTS.indexOf(req.headers.host)) {
       res.render(`errors/${statusCode}`, payload);
     } else {
       res.json(payload);

@@ -16,11 +16,18 @@ dotenv.config();
 
 // override env-specific .env file
 const env = process.env.NODE_ENV || 'development';
-process.env.NODE_ENV = env;
 const envConfig = dotenv.parse(fs.readFileSync(`.env.${env}`));
 for (let k in envConfig) {
   process.env[k] = envConfig[k];
 }
+
+// add custom env
+process.env.NODE_ENV = env;
+process.env.HOSTS = [
+  process.env.HOST,
+  '172.20.11.12',
+  '10.0.75.1'
+].map(host => `${host}:${process.env.PORT}`);
 
 const app = express();
 

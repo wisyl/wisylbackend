@@ -41,10 +41,11 @@ module.exports = function(app, passport) {
       threshold: 512
     })
   );
-
+  const origins = [];
+  process.env.HOSTS.split(',').forEach(host => origins.push(`http://${host}`, `https://${host}`));
   app.use(
     cors({
-      origin: [`http://${process.env.HOST}:${process.env.PORT}`],
+      origin: origins,
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
       credentials: true
     })
