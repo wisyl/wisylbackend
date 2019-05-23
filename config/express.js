@@ -31,7 +31,7 @@ const env = process.env.NODE_ENV || 'development';
 
 module.exports = function(app) {
   app.use(helmet());
-  //app.use(requireHttps);
+  app.use(requireHttps);
 
   // Compression middleware (should be placed before express.static)
   app.use(
