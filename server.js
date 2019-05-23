@@ -16,6 +16,7 @@ dotenv.config();
 
 // override env-specific .env file
 const env = process.env.NODE_ENV || 'development';
+process.env.NODE_ENV = env;
 const envConfig = dotenv.parse(fs.readFileSync(`.env.${env}`));
 for (let k in envConfig) {
   process.env[k] = envConfig[k];
@@ -44,7 +45,7 @@ connect();
 
 function listen() {
   if (app.get('env') === 'test') return;
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT;
   app.listen(port);
   console.log('Express app started on port ' + port);
 }

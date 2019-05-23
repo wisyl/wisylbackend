@@ -4,7 +4,7 @@
 // https://stackoverflow.com/a/31144924
 
 module.exports = function requireHTTPS(req, res, next) {
-  const env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV;
   if (
     !req.secure &&
     req.get('x-forwarded-proto') !== 'https' &&

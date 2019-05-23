@@ -3,19 +3,20 @@
 const { wrap: async } = require('co');
 
 /*
- *  Define res.apiError & res.apiSuccess
+ *  Define res.err & res.success
  */
 exports.apiResponse = function (req, res, next) {
-  res.apiError = function (statusCode, err) {
-    res.status(statusCode).json({
-      error: err.message
-    });
+  res.err = function (statusCode, payload) {
+    res.status(statusCode);
+    if (req.headers.host === `${process.env.HOST}:${process.env.PORT}`) {
+      res.render(`errors/${statusCode}`, payload);
+    } else {
+      res.json(payload);
+    }
   };
 
-  res.apiSuccess = function (payload) {
-    res.json(Object.assign({
-      success: true
-    }, payload));
+  res.success = function (payload) {
+    res.json(payload);
   };
 
   next();

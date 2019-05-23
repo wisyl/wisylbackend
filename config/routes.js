@@ -63,13 +63,12 @@ module.exports = function (app, passport) {
 
     console.error(err.stack);
 
+    // error page
+    const payload = { error: err.stack };
     if (err.stack.includes('ValidationError')) {
-      res.status(422).render('422', { error: err.stack });
-      return;
+      return res.err(422, payload);
     }
 
-    // error page
-    res.status(500).render('500', { error: err.stack });
   });
 
   // assume 404 since no middleware responded
@@ -78,7 +77,6 @@ module.exports = function (app, passport) {
       url: req.originalUrl,
       error: 'Not found'
     };
-    if (req.accepts('json')) return res.status(404).json(payload);
-    res.status(404).render('404', payload);
+    res.err(404, payload);
   });
 };

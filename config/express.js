@@ -25,7 +25,7 @@ const requireHttps = require('./middlewares/require-https');
 const config = require('./');
 const pkg = require('../package.json');
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV;
 
 /**
  * Expose
@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
 
   app.use(
     cors({
-      origin: [`http://localhost:3000`],
+      origin: [`http://${process.env.HOST}:${process.env.PORT}`],
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
       credentials: true
     })
