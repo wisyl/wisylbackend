@@ -16,7 +16,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const upload = require('multer')();
 
-const mongoStore = require('connect-mongo')(session);
+const DynamoDBStore = require('dynamodb-store');
 const flash = require('connect-flash');
 const winston = require('winston');
 const helpers = require('view-helpers');
@@ -101,9 +101,18 @@ module.exports = function (app, passport) {
       resave: false,
       saveUninitialized: true,
       secret: pkg.name,
-      store: new mongoStore({
-        url: config.db,
-        collection: 'sessions'
+      store: new DynamoDBStore({
+        table: {
+          name: 'sessions',
+          hashKey: 'id',
+          hashPrefix: '',
+          readCapacityUnits: 10,
+          writeCapacityUnits: 10
+        },
+        dynamoConfig: config.aws,
+        keepExpired: false,
+        touchInterval: 30000,
+        ttl: 600000
       })
     })
   );

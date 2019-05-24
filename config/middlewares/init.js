@@ -30,14 +30,14 @@ exports.apiResponse = function (req, res, next) {
 exports.parseToken = async(function* (req, res, next) {
   if (req.headers.token) {
     const token = req.headers.token;
-    const mongoose = require('mongoose');
+    const models = require('../../app/models');
     try {
-      const OrgToken = mongoose.model('OrgToken');
+      const OrgToken = models.OrgToken;
       req.org = OrgToken.load(token).org;
       return next();
     } catch (err) { }
     try {
-      const RcpToken = mongoose.model('RcpToken');
+      const RcpToken = models.RcpToken;
       req.user = RcpToken.load(token).rcp;
       return next();
     } catch (err) { }

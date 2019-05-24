@@ -6,9 +6,7 @@
 
 const fs = require('fs');
 const dotenv = require('dotenv');
-const join = require('path').join;
 const express = require('express');
-const mongoose = require('mongoose');
 const passport = require('passport');
 
 // .env
@@ -30,6 +28,7 @@ process.env.HOSTS = [
 ].map(host => `${host}:${process.env.PORT}`);
 
 const app = express();
+app.set('env', process.env.NODE_ENV);
 
 /**
  * Expose
@@ -37,32 +36,16 @@ const app = express();
 
 module.exports = app;
 
-// models
-const models = join(__dirname, 'app/models');
-fs.readdirSync(models)
-  .filter(file => ~file.search(/^[^.].*\.js$/))
-  .forEach(file => require(join(models, file)));
-
 // routes
 require('./config/passport')(passport);
 require('./config/express')(app, passport);
 require('./config/routes')(app, passport);
 
-connect();
+listen();
 
 function listen() {
   if (app.get('env') === 'test') return;
   const port = process.env.PORT;
   app.listen(port);
   console.log('Express app started on port ' + port);
-}
-
-function connect() {
-  const config = require('./config');
-
-  mongoose.connection
-    .on('error', console.log)
-    .on('disconnected', connect)
-    .once('open', listen);
-  return mongoose.connect(config.db, { keepAlive: 1, useNewUrlParser: true });
 }

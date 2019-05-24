@@ -4,9 +4,8 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
 const LocalStrategy = require('passport-local').Strategy;
-const Admin = mongoose.model('Admin');
+const Admin = require('../../app/models/admin');
 
 /**
  * Expose

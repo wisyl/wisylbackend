@@ -4,12 +4,11 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
 const test = require('tape');
 const request = require('supertest');
 const app = require('../server');
 const { cleanup } = require('./helper');
-const Admin = mongoose.model('Admin');
+const Admin = require('../app/models/admin');
 
 test('Clean up', cleanup);
 

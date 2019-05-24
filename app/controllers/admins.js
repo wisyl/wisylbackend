@@ -4,9 +4,8 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
 const { wrap: async } = require('co');
-const Admin = mongoose.model('Admin');
+const Admin = require('../models/admin');
 const constant = require('../../config/constant');
 
 /**
