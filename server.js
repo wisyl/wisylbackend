@@ -37,13 +37,13 @@ const app = express();
 
 module.exports = app;
 
-// Bootstrap models
+// models
 const models = join(__dirname, 'app/models');
 fs.readdirSync(models)
   .filter(file => ~file.search(/^[^.].*\.js$/))
   .forEach(file => require(join(models, file)));
 
-// Bootstrap routes
+// routes
 require('./config/passport')(passport);
 require('./config/express')(app, passport);
 require('./config/routes')(app, passport);
