@@ -6,21 +6,17 @@ block main
 block content
   table.mt-3.w-100
     thead
-      tr
-        th.border.text-center.font-weight-bold Name
-        th.border.text-center.font-weight-bold Email
-        th.border.text-center.font-weight-bold Action
+      tr.border-bottom.border-dark.text-center.font-weight-bold
+        th Name
+        th Email
     tbody
       each admin, index in admins
-        tr
-          th.border.text-center.font-weight-normal 
+        tr.border-bottom.text-center
+          th.font-weight-normal
             a(href=`/cms/admins/${admin.id}`)=admin.name
             - if (admin.id === req.user.id)
               span.text-success &nbsp;(you)
-          th.border.text-center.font-weight-normal #{admin.email}
-          th.border.text-center
-            i.text-success.fa.fa-edit
-            i.ml-2.text-danger.fa.fa-trash
+          th.font-weight-normal #{admin.email}
 
   - if (pages > 1)
     ul.pagination
