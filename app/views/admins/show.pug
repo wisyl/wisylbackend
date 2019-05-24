@@ -1,5 +1,9 @@
 extends ../layouts/default
 
 block main
-  - var name = admin.name
-  h1= name
+  h1 Admin Profile
+
+block content
+  pre
+    | #{admin.name}
+    | #{admin.email}
