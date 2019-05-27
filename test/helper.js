@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const Admin = require('../app/models/admin');
+const Admin = require('../app/models/Admin');
 const co = require('co');
 
 /**

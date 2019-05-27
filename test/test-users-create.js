@@ -8,7 +8,7 @@ const test = require('tape');
 const request = require('supertest');
 const app = require('../server');
 const { cleanup } = require('./helper');
-const Admin = require('../app/models/admin');
+const Admin = require('../app/models/Admin');
 
 test('Clean up', cleanup);
 

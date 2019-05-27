@@ -71,20 +71,39 @@ Admin.prototype.encryptPassword = function (password) {
  */
 
 Admin.load = function (options, cb) {
-  //options.select = options.select || 'name email';
-  //return this.findOne(options.criteria)
-  //  .select(options.select)
-  //  .exec(cb);
+  options.attributes = options.attributes || ['name', 'email'];
+  return Admin
+    .query(options.email)
+    .attributes(options.attributes)
+    .exec(cb);
 };
 
 Admin.list = function (options) {
-  //const criteria = options.criteria || {};
-  //const page = options.page || 0;
-  //const limit = options.limit || 30;
-  //return this.find(criteria)
-  //  .limit(limit)
-  //  .skip(limit * page)
-  //  .exec();
+  const criteria = options.criteria || [];
+  const attributes = options.attributes || ['name', 'email'];
+  const page = options.page || 0;
+  const limit = options.limit || 30;
+  const scan = Admin.scan();
+  criteria.forEach(it => {
+    switch (it.func) {
+      case 'lt':
+      case 'lte':
+      case 'gt':
+      case 'gte':
+      case 'beginsWith':
+      case 'between':
+        // TODO
+      case 'equals':
+      default:
+        scan = scan.where(it.where).equals(it.val);
+    }
+  });
+
+  return scan
+    .attributes(attributes)
+    .limit(limit)
+    .skip(limit * page)
+    .exec();
 };
 
 require('./_createTables')('Admin');
