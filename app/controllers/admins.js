@@ -14,8 +14,8 @@ const constant = require('../../config/constant');
 
 exports.load = async(function*(req, res, next, email) {
   try {
-    req.profile = yield Admin.load({ email });
-    if (!req.profile) return next(new Error('User not found'));
+    req.admin = yield Admin.load({ email });
+    if (!req.admin) return next(new Error('Admin not found'));
   } catch (err) {
     return next(err);
   }
@@ -52,7 +52,7 @@ exports.create = async(function*(req, res) {
  */
 
 exports.show = function (req, res) {
-  const admin = req.profile;
+  const admin = req.admin;
   res.render('admins/show', {
     title: admin.name,
     admin

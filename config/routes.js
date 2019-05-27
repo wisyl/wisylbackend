@@ -31,7 +31,7 @@ module.exports = function (app, passport) {
 
 
   // CMS
-  app.param('adminId', controllers.admins.load);
+  app.param('adminEmail', controllers.admins.load);
   app.get('/', middlewares.auth.requiresLogin, controllers.dashboard.index);
   app.get('/login', controllers.admins.login);
   app.get('/signup', controllers.admins.signup);
@@ -45,7 +45,7 @@ module.exports = function (app, passport) {
     }),
     controllers.admins.session
   );
-  app.get('/cms/admins/:adminId', middlewares.auth.requiresLogin, controllers.admins.show);
+  app.get('/cms/admins/:adminEmail', middlewares.auth.requiresLogin, controllers.admins.show);
   app.get('/cms/admins', middlewares.auth.requiresLogin, controllers.admins.list);
   //app.get('/cms/orgs', middlewares.auth.requiresLogin, controllers.orgs.list);
   //app.get('/cms/rcps', middlewares.auth.requiresLogin, controllers.rcps.list);
