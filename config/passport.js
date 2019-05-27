@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const Admin = require('../app/models/admin');
+const Admin = require('../app/models/Admin');
 const local = require('./passport/local');
 
 /**
@@ -14,8 +14,8 @@ const local = require('./passport/local');
 module.exports = function (passport) {
   // serialize sessions
   passport.serializeUser((admin, cb) => cb(null, admin.email));
-  passport.deserializeUser((id, cb) =>
-    Admin.load({ criteria: { _id: id } }, cb)
+  passport.deserializeUser((email, cb) =>
+    Admin.load({ email }, cb)
   );
 
   // use these strategies

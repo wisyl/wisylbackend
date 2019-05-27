@@ -5,7 +5,7 @@
  */
 
 const { wrap: async } = require('co');
-const Admin = require('../models/admin');
+const Admin = require('../models/Admin');
 
 /**
  * Load dashboard data (statistics)

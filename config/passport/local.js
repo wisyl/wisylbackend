@@ -5,7 +5,7 @@
  */
 
 const LocalStrategy = require('passport-local').Strategy;
-const Admin = require('../../app/models/admin');
+const Admin = require('../../app/models/Admin');
 
 /**
  * Expose
@@ -18,8 +18,8 @@ module.exports = new LocalStrategy(
   },
   function (email, password, done) {
     const options = {
-      criteria: { email: email },
-      select: 'name email hashed_password salt'
+      email: email,
+      attributes: 'name email hashed_password salt'.split(' ');
     };
     Admin.load(options, function (err, admin) {
       if (err) return done(err);

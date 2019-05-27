@@ -5,17 +5,16 @@
  */
 
 const { wrap: async } = require('co');
-const Admin = require('../models/admin');
+const Admin = require('../models/Admin');
 const constant = require('../../config/constant');
 
 /**
  * Load admin
  */
 
-exports.load = async(function*(req, res, next, _id) {
-  const criteria = { _id };
+exports.load = async(function*(req, res, next, email) {
   try {
-    req.profile = yield Admin.load({ criteria });
+    req.profile = yield Admin.load({ email });
     if (!req.profile) return next(new Error('User not found'));
   } catch (err) {
     return next(err);
