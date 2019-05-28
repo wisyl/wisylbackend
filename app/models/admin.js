@@ -87,12 +87,23 @@ Admin.list = function (options) {
   criteria.forEach(it => {
     switch (it.func) {
       case 'lt':
+        scan = scan.where(it.where).lt(it.val);
+        break;
       case 'lte':
+        scan = scan.where(it.where).lt(it.val);
+        break;
       case 'gt':
+        scan = scan.where(it.where).gt(it.val);
+        break;
       case 'gte':
+        scan = scan.where(it.where).gte(it.val);
+        break;
       case 'beginsWith':
+        scan = scan.where(it.where).beginsWith(it.val);
+        break;
       case 'between':
-        // TODO
+        scan = scan.where(it.where).between(it.val[0], it.val[1]);
+        break;
       case 'equals':
       default:
         scan = scan.where(it.where).equals(it.val);
