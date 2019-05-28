@@ -25,21 +25,25 @@ Admin.before('create', function (data, next) {
   if (!data.password || !data.password.length) {
     return next(new Error('Password can not be empty'), data)
   }
-  data.salt = data.makeSalt();
-  data.hashed_password = data.encryptPassword(data.password);
+  data.salt = makeSalt();
+  data.hashed_password = encryptPassword(data.salt, data.password);
+
+  delete data.password;
+  delete data._csrf;
+
   next(null, data);
 });
 
-Admin.before('update', function (data, next) {
-  if (!data.password) return next(null, data);
+//Admin.before('update', function (data, next) {
+//  if (!data.password) return next(null, data);
 
-  if (!data.password.length) {
-    return next(new Error('Password can not be empty'), data)
-  }
-  data.salt = data.makeSalt();
-  data.hashed_password = data.encryptPassword(data.password);
-  next(null, data);
-});
+//  if (!data.password.length) {
+//    return next(new Error('Password can not be empty'), data)
+//  }
+//  data.salt = makeSalt();
+//  data.hashed_password = encryptPassword(data.salt, data.password);
+//  next(null, data);
+//});
 
 
 /**
@@ -47,18 +51,18 @@ Admin.before('update', function (data, next) {
  */
 
 Admin.prototype.authenticate = function (plainText) {
-  return this.encryptPassword(plainText) === this.hashed_password;
+  return encryptPassword(this.get('salt'), plainText) === this.get('hashed_password');
 };
 
-Admin.prototype.makeSalt = function () {
+const makeSalt = function () {
   return Math.round(new Date().valueOf() * Math.random()) + '';
 };
 
-Admin.prototype.encryptPassword = function (password) {
+const encryptPassword = function (salt, password) {
   if (!password) return '';
   try {
     return crypto
-      .createHmac('sha1', this.salt)
+      .createHmac('sha1', salt)
       .update(password)
       .digest('hex');
   } catch (err) {
@@ -72,10 +76,10 @@ Admin.prototype.encryptPassword = function (password) {
 
 Admin.load = function (options, cb) {
   options.attributes = options.attributes || ['name', 'email'];
-  return Admin
-    .query(options.email)
-    .attributes(options.attributes)
-    .exec(cb);
+  return Admin.get(options.email, {
+    ConsistentRead: true,
+    AttributesToGet: options.attributes
+  }, cb);
 };
 
 Admin.list = function (options) {

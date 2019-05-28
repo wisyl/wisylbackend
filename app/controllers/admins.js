@@ -5,6 +5,7 @@
  */
 
 const { wrap: async } = require('co');
+const only = require('only');
 const Admin = require('../models/Admin');
 const constant = require('../../config/constant');
 
@@ -27,12 +28,17 @@ exports.load = async(function*(req, res, next, email) {
  */
 
 exports.create = async(function*(req, res) {
-  const admin = new Admin(req.body);
   try {
-    yield admin.save();
-    req.logIn(admin, err => {
-      if (err) req.flash('info', 'Sorry! We are not able to log you in!');
-      res.redirect('/');
+    Admin.create(only(req.body, 'email password name'), (err, admin) => {
+      if (err) {
+        console.log(err);
+        req.flash('info', 'Sorry! We are not able to log you in!');
+        return res.redirect('/');
+      }
+      req.logIn(admin, err => {
+        if (err) req.flash('info', 'Sorry! We are not able to log you in!');
+        res.redirect('/');
+      });
     });
   } catch (err) {
     const errors = Object.keys(err.errors).map(
@@ -65,6 +71,10 @@ exports.show = function (req, res) {
  */
 
 exports.login = function (req, res) {
+  if (req.admin) {
+    return res.redirect('/');
+  }
+
   res.render('admins/login', {
     title: 'Login'
   });
