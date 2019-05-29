@@ -27,7 +27,7 @@ exports.apiResponse = function (req, res, next) {
  *  Parse token and set req.user & req.userRole
  */
 
-exports.parseToken = async(function* (req, res, next) {
+exports.parseToken = function (req, res, next) {
   if (req.headers.token) {
     const token = req.headers.token;
     const models = require('../../app/models');
@@ -48,4 +48,4 @@ exports.parseToken = async(function* (req, res, next) {
   }
 
   next();
-});
+};

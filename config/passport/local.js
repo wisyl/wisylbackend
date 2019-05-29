@@ -19,7 +19,7 @@ module.exports = new LocalStrategy(
   function (email, password, done) {
     const options = {
       email: email,
-      attributes: 'name email hashed_password salt'.split(' ')
+      attributes: 'id name email hashed_password salt'.split(' ')
     };
     Admin.load(options, function (err, admin) {
       if (err) return done(err);

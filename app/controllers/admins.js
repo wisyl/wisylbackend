@@ -4,7 +4,6 @@
  * Module dependencies.
  */
 
-const { wrap: async } = require('co');
 const only = require('only');
 const Admin = require('../models/Admin');
 const constant = require('../../config/constant');
@@ -13,21 +12,21 @@ const constant = require('../../config/constant');
  * Load admin
  */
 
-exports.load = async(function*(req, res, next, email) {
-  try {
-    req.admin = yield Admin.load({ email });
+exports.load = function (req, res, next, id) {
+  Admin.load({ id }, (err, admin) => {
+    if (err) return next(err);
+    req.admin = admin;
     if (!req.admin) return next(new Error('Admin not found'));
-  } catch (err) {
-    return next(err);
-  }
-  next();
-});
+
+    next();
+  });
+};
 
 /**
  * Create admin
  */
 
-exports.create = async(function*(req, res) {
+exports.create = function (req, res) {
   try {
     Admin.create(only(req.body, 'email password name'), (err, admin) => {
       if (err) {
@@ -51,17 +50,16 @@ exports.create = async(function*(req, res) {
       admin
     });
   }
-});
+};
 
 /**
  *  Show profile
  */
 
 exports.show = function (req, res) {
-  const admin = req.admin;
   res.render('admins/show', {
-    title: admin.name,
-    admin
+    title: req.admin.attrs.name,
+    admin: req.admin
   });
 };
 
@@ -71,9 +69,7 @@ exports.show = function (req, res) {
  */
 
 exports.login = function (req, res) {
-  if (req.admin) {
-    return res.redirect('/');
-  }
+  if (req.user) return res.redirect('/');
 
   res.render('admins/login', {
     title: 'Login'
@@ -120,23 +116,21 @@ function login(req, res) {
  * List
  */
 
-exports.list = async(function* (req, res) {
+exports.list = function (req, res) {
   const page = (req.query.page > 0 ? req.query.page : 1) - 1;
   const limit = req.query.limit || constant.pageLimit;
-  const _id = req.query.item;
-  const options = {
-    limit,
-    page
-  };
-
-  if (_id) options.criteria = { _id };
-
-  const admins = yield Admin.list(options);
-  const count = yield Admin.countDocuments();
-  res.render('admins/list', {
-    title: 'Administrators',
-    admins,
-    page: page + 1,
-    pages: Math.ceil(count / limit)
-  });
-});
+  Admin
+    .scan()
+    .limit(limit)
+    .attributes('id name email'.split(' '))
+    .loadAll()
+    .exec((err, result) => {
+      if (err) return next(err);
+      res.render('admins/list', {
+        title: 'Administrators',
+        admins: result.Items,
+        page: page + 1,
+        pages: 1//Math.ceil(count / limit)
+      });
+    });
+};

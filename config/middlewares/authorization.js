@@ -16,9 +16,9 @@ exports.requiresLogin = function (req, res, next) {
 
 exports.admin = {
   hasAuthorization: function (req, res, next) {
-    if (req.admin.email != req.user.email) {
+    if (req.admin.id != req.user.id) {
       req.flash('info', 'You are not authorized');
-      return res.redirect('/cms/admins/' + req.admin.email);
+      return res.redirect('/cms/admins/' + req.admin.id);
     }
     next();
   }

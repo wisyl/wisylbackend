@@ -13,10 +13,10 @@ block content
       each admin, index in admins
         tr.border-bottom.text-center
           th.font-weight-normal
-            a(href=`/cms/admins/${admin.id}`)=admin.name
-            - if (admin.email === req.user.email)
+            a(href=`/cms/admins/${admin.attrs.id}`)=admin.attrs.name
+            - if (admin.attrs.id === req.user.attrs.id)
               span.text-success &nbsp;(you)
-          th.font-weight-normal #{admin.email}
+          th.font-weight-normal #{admin.attrs.email}
 
   - if (pages > 1)
     ul.pagination
