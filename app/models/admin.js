@@ -23,16 +23,24 @@ const Admin = vogels.define('Admin', {
  */
 
 Admin.before('create', function (data, next) {
+  // password validation
   if (!data.password || !data.password.length) {
     return next(new Error('Password can not be empty'), data)
   }
-  data.salt = makeSalt();
-  data.hashed_password = encryptPassword(data.salt, data.password);
 
-  delete data.password;
-  delete data._csrf;
+  // email duplication
+  Admin.load({ email: data.email }, (err, admin) => {
+    if (err) return next(err);
+    if (admin) return next(new Error('Email already exists'), data);
 
-  next(null, data);
+    data.salt = makeSalt();
+    data.hashed_password = encryptPassword(data.salt, data.password);
+
+    delete data.password;
+    delete data._csrf;
+
+    next(null, data);
+  });
 });
 
 //Admin.before('update', function (data, next) {
@@ -92,6 +100,6 @@ Admin.load = function (options, cb) {
   }
 };
 
-require('./_createTables')('Admin');
+require('./_createTables')({ Admin: { readCapacity: 10, writeCapacity: 10 } });
 
 module.exports = Admin

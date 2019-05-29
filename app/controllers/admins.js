@@ -26,30 +26,25 @@ exports.load = function (req, res, next, id) {
  * Create admin
  */
 
-exports.create = function (req, res) {
-  try {
-    Admin.create(only(req.body, 'email password name'), (err, admin) => {
-      if (err) {
-        console.log(err);
-        req.flash('info', 'Sorry! We are not able to log you in!');
-        return res.redirect('/');
-      }
-      req.logIn(admin, err => {
-        if (err) req.flash('info', 'Sorry! We are not able to log you in!');
-        res.redirect('/');
-      });
-    });
-  } catch (err) {
-    const errors = Object.keys(err.errors).map(
-      field => err.errors[field].message
-    );
+exports.create = function (req, res, next) {
+  Admin.create(only(req.body, 'email password name'), (err, admin) => {
+    if (err) {
+      const errors = err.errors ? Object.keys(err.errors).map(
+        field => err.errors[field].message
+      ) : [err.message];
 
-    res.render('admins/signup', {
-      title: 'Sign up',
-      errors,
-      admin
+      return res.render('admins/signup', {
+        title: 'Sign up',
+        errors,
+        admin: req.body
+      });
+    }
+
+    req.logIn(admin, err => {
+      if (err) req.flash('info', 'Sorry! We are not able to log you in!');
+      res.redirect('/');
     });
-  }
+  });
 };
 
 /**
@@ -121,16 +116,16 @@ exports.list = function (req, res) {
   const limit = req.query.limit || constant.pageLimit;
   Admin
     .scan()
-    .limit(limit)
+    //.limit(limit)
     .attributes('id name email'.split(' '))
     .loadAll()
     .exec((err, result) => {
       if (err) return next(err);
       res.render('admins/list', {
         title: 'Administrators',
-        admins: result.Items,
+        admins: result.Items.slice(limit * page, limit),
         page: page + 1,
-        pages: 1//Math.ceil(count / limit)
+        pages: Math.ceil(result.Count / limit)
       });
     });
 };

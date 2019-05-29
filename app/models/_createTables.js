@@ -2,9 +2,10 @@
 
 const vogels = require('vogels');
 
-module.exports = function (model) {
+module.exports = function (options) {
+  const tableName = Object.keys(options)[0];
   vogels.createTables(function (err) {
-    if (err) return console.log(`Error creating ${model} table.`);
-    console.log(`${model} table has been created.`);
+    if (err) return console.log(`Error creating ${tableName} table.`);
+    console.log(`${tableName} table has been created.`);
   });
 }
