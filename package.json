@@ -1,7 +1,7 @@
 {
-  "name": "wisyl",
-  "description": "This project exposes Restful APIs for Organization & Recipient Apps and the regarding CMS website.",
-  "url": "https://wisyl.com",
+  "name": "wisyl-cms",
+  "description": "Wisyl CMS",
+  "url": "https://wisyl.admin.com",
   "version": "0.3.0",
   "private": false,
   "engines": {
