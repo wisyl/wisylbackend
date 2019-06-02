@@ -111,8 +111,9 @@ module.exports = function (app, passport) {
       client: new AWS.DynamoDB({
         endpoint: new AWS.Endpoint(config.aws.endpoint)
       }),
-      readCapacityUnits: 25,
-      writeCapacityUnits: 25
+      table: 'admin-sessions',
+      readCapacityUnits: 20,
+      writeCapacityUnits: 20
     })
   }));
 
