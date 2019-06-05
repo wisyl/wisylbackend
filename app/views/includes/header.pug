@@ -12,8 +12,8 @@ nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
         a.nav-link(href="/cms/rpcs") Recipients
     ul.navbar-nav.ml-auto
       - if (req.isAuthenticated())
-        li.nav-item(class=isActive(`/cms/admins/${req.user.id}`) && 'active')
-          a.nav-link(href="/cms/admins/"+req.user.id)=req.user.name
+        li.nav-item(class='nav-item')
+          a.nav-link(href="/cms/admins/"+req.user.attrs.id)=req.user.attrs.name
         li.nav-item
           a.nav-link(href="/logout") Logout
       - else

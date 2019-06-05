@@ -73,6 +73,7 @@ module.exports = function (app, passport) {
       return res.err(422, payload);
     }
 
+    res.err(500, payload);
   });
 
   // assume 404 since no middleware responded

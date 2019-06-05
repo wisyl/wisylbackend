@@ -5,6 +5,7 @@
  */
 
 const express = require('express');
+const favicon = require('serve-favicon')
 const session = require('express-session');
 const compression = require('compression');
 const morgan = require('morgan');
@@ -13,10 +14,12 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const csrf = require('csurf');
 const cors = require('cors');
+const path = require('path');
 const helmet = require('helmet');
 const upload = require('multer')();
 
-const mongoStore = require('connect-mongo')(session);
+const DynamoDBStore = require('connect-dynamodb')(session);
+const AWS = require('aws-sdk');
 const flash = require('connect-flash');
 const winston = require('winston');
 const helpers = require('view-helpers');
@@ -53,6 +56,9 @@ module.exports = function (app, passport) {
 
   // Static files middleware
   app.use(express.static(config.root + '/public'));
+
+  // favicon
+  app.use(favicon(path.join(config.root, 'public', 'favicon.ico')))
 
   // Use winston on production
   let log = 'dev';
@@ -96,17 +102,20 @@ module.exports = function (app, passport) {
 
   // CookieParser should be above session
   app.use(cookieParser());
-  app.use(
-    session({
-      resave: false,
-      saveUninitialized: true,
-      secret: pkg.name,
-      store: new mongoStore({
-        url: config.db,
-        collection: 'sessions'
-      })
+  app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: pkg.name,
+    store: new DynamoDBStore({
+      AWSConfigJSON: config.aws,
+      client: new AWS.DynamoDB({
+        endpoint: new AWS.Endpoint(config.aws.endpoint)
+      }),
+      table: 'admin-sessions',
+      readCapacityUnits: 20,
+      writeCapacityUnits: 20
     })
-  );
+  }));
 
   // use passport session
   app.use(passport.initialize());

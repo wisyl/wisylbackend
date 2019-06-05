@@ -4,9 +4,7 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
-const Admin = mongoose.model('Admin');
-
+const Admin = require('../app/models/Admin');
 const local = require('./passport/local');
 
 /**
@@ -15,10 +13,8 @@ const local = require('./passport/local');
 
 module.exports = function (passport) {
   // serialize sessions
-  passport.serializeUser((admin, cb) => cb(null, admin.id));
-  passport.deserializeUser((id, cb) =>
-    Admin.load({ criteria: { _id: id } }, cb)
-  );
+  passport.serializeUser((admin, cb) => cb(null, admin.attrs.id));
+  passport.deserializeUser((id, cb) => Admin.load({ id }, cb));
 
   // use these strategies
   passport.use(local);

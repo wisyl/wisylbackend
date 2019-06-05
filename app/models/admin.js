@@ -1,167 +1,105 @@
 'use strict';
 
-/**
- * Module dependencies.
- */
-
-const mongoose = require('mongoose');
+const vogels = require('vogels');
+const Joi = require('joi');
 const crypto = require('crypto');
+const config = require('../../config');
+vogels.AWS.config.update(config.aws);
 
-const Schema = mongoose.Schema;
-
-/**
- * User Schema
- */
-
-const AdminSchema = new Schema({
-  name: String,
-  email: String,
-  hashed_password: String,
-  salt: String,
-});
-
-const validatePresenceOf = value => value && value.length;
-
-/**
- * Virtuals
- */
-
-AdminSchema.virtual('password')
-  .set(function (password) {
-    this._password = password;
-    this.salt = this.makeSalt();
-    this.hashed_password = this.encryptPassword(password);
-  })
-  .get(function () {
-    return this._password;
-  });
-
-/**
- * Validations
- */
-
-// the below 5 validations only apply if you are signing up traditionally
-
-AdminSchema.path('name').validate(validatePresenceOf, 'Name cannot be blank');
-
-AdminSchema.path('email').validate(validatePresenceOf, 'Email cannot be blank');
-
-AdminSchema.path('email').validate(function (email) {
-  return new Promise(resolve => {
-    const User = mongoose.model('Admin');
-
-    // Check only when it is a new user or when email field is modified
-    if (this.isNew || this.isModified('email')) {
-      User.find({ email }).exec((err, users) => resolve(!err && !users.length));
-    } else resolve(true);
-  });
-}, 'Email `{VALUE}` already exists');
-
-AdminSchema.path('hashed_password').validate(function (hashed_password) {
-  return hashed_password.length && this._password.length;
-}, 'Password cannot be blank');
-
-/**
- * Pre-save hook
- */
-
-AdminSchema.pre('save', function (next) {
-  if (!this.isNew) return next();
-
-  if (!validatePresenceOf(this.password)) {
-    next(new Error('Invalid password'));
-  } else {
-    next();
+const Admin = vogels.define('Admin', {
+  hashKey: 'id',
+  timestamps: true,
+  schema: {
+    id: vogels.types.uuid(),
+    name: Joi.string().trim().regex(/^[A-Za-z ]{3,}$/),
+    email: Joi.string().email().trim().required(),
+    hashed_password: Joi.string(),
+    salt: Joi.string(),
   }
 });
+
+/**
+ * Hooks
+ */
+
+Admin.before('create', function (data, next) {
+  // password validation
+  if (!data.password || !data.password.length) {
+    return next(new Error('Password can not be empty'), data)
+  }
+
+  // email duplication
+  Admin.load({ email: data.email }, (err, admin) => {
+    if (err) return next(err);
+    if (admin) return next(new Error('Email already exists'), data);
+
+    data.salt = makeSalt();
+    data.hashed_password = encryptPassword(data.salt, data.password);
+
+    delete data.password;
+    delete data._csrf;
+
+    next(null, data);
+  });
+});
+
+//Admin.before('update', function (data, next) {
+//  if (!data.password) return next(null, data);
+
+//  if (!data.password.length) {
+//    return next(new Error('Password can not be empty'), data)
+//  }
+//  data.salt = makeSalt();
+//  data.hashed_password = encryptPassword(data.salt, data.password);
+//  next(null, data);
+//});
+
 
 /**
  * Methods
  */
 
-AdminSchema.methods = {
-  /**
-   * Authenticate - check if the passwords are the same
-   *
-   * @param {String} plainText
-   * @return {Boolean}
-   * @api public
-   */
-
-  authenticate: function (plainText) {
-    return this.encryptPassword(plainText) === this.hashed_password;
-  },
-
-  /**
-   * Make salt
-   *
-   * @return {String}
-   * @api public
-   */
-
-  makeSalt: function () {
-    return Math.round(new Date().valueOf() * Math.random()) + '';
-  },
-
-  /**
-   * Encrypt password
-   *
-   * @param {String} password
-   * @return {String}
-   * @api public
-   */
-
-  encryptPassword: function (password) {
-    if (!password) return '';
-    try {
-      return crypto
-        .createHmac('sha1', this.salt)
-        .update(password)
-        .digest('hex');
-    } catch (err) {
-      return '';
-    }
-  }
+Admin.prototype.authenticate = function (plainText) {
+  return encryptPassword(this.get('salt'), plainText) === this.get('hashed_password');
 };
+
+const makeSalt = function () {
+  return Math.round(new Date().valueOf() * Math.random()) + '';
+};
+
+const encryptPassword = function (salt, password) {
+  if (!password) return '';
+  try {
+    return crypto
+      .createHmac('sha1', salt)
+      .update(password)
+      .digest('hex');
+  } catch (err) {
+    return '';
+  }
+}
 
 /**
  * Statics
  */
 
-AdminSchema.statics = {
-  /**
-   * Load
-   *
-   * @param {Object} options
-   * @param {Function} cb
-   * @api private
-   */
-
-  load: function (options, cb) {
-    options.select = options.select || 'name email';
-    return this.findOne(options.criteria)
-      .select(options.select)
-      .exec(cb);
-  },
-
-  /**
-   * List
-   *
-   * @param {Object} options
-   * @param {Function} cb
-   * @api private
-   */
-
-  list: function (options) {
-
-    const criteria = options.criteria || {};
-    const page = options.page || 0;
-    const limit = options.limit || 30;
-    return this.find(criteria)
-      .limit(limit)
-      .skip(limit * page)
-      .exec();
+Admin.load = function (options, cb) {
+  options.attributes = options.attributes || ['id', 'name', 'email'];
+  if (options.id) {
+    return Admin.get(options.id, {
+      ConsistentRead: true,
+      AttributesToGet: options.attributes
+    }, cb);
+  } else {
+    return Admin.scan()
+      .where('email').equals(options.email)
+      .exec((err, result) => {
+        if (err) return cb(err, null);
+        return cb(err, result.Count > 0 ? result.Items[0] : null);
+      });
   }
 };
 
-mongoose.model('Admin', AdminSchema);
+require('./_createTables')({ Admin: { readCapacity: 10, writeCapacity: 10 } });
+
+module.exports = Admin

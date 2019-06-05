@@ -4,60 +4,57 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
-const { wrap: async } = require('co');
-const Admin = mongoose.model('Admin');
+const only = require('only');
+const Admin = require('../models/Admin');
 const constant = require('../../config/constant');
 
 /**
  * Load admin
  */
 
-exports.load = async(function*(req, res, next, _id) {
-  const criteria = { _id };
-  try {
-    req.profile = yield Admin.load({ criteria });
-    if (!req.profile) return next(new Error('User not found'));
-  } catch (err) {
-    return next(err);
-  }
-  next();
-});
+exports.load = function (req, res, next, id) {
+  Admin.load({ id }, (err, admin) => {
+    if (err) return next(err);
+    req.admin = admin;
+    if (!req.admin) return next(new Error('Admin not found'));
+
+    next();
+  });
+};
 
 /**
  * Create admin
  */
 
-exports.create = async(function*(req, res) {
-  const admin = new Admin(req.body);
-  try {
-    yield admin.save();
+exports.create = function (req, res, next) {
+  Admin.create(only(req.body, 'email password name'), (err, admin) => {
+    if (err) {
+      const errors = err.errors ? Object.keys(err.errors).map(
+        field => err.errors[field].message
+      ) : [err.message];
+
+      return res.render('admins/signup', {
+        title: 'Sign up',
+        errors,
+        admin: req.body
+      });
+    }
+
     req.logIn(admin, err => {
       if (err) req.flash('info', 'Sorry! We are not able to log you in!');
       res.redirect('/');
     });
-  } catch (err) {
-    const errors = Object.keys(err.errors).map(
-      field => err.errors[field].message
-    );
-
-    res.render('admins/signup', {
-      title: 'Sign up',
-      errors,
-      admin
-    });
-  }
-});
+  });
+};
 
 /**
  *  Show profile
  */
 
 exports.show = function (req, res) {
-  const admin = req.profile;
   res.render('admins/show', {
-    title: admin.name,
-    admin
+    title: req.admin.attrs.name,
+    admin: req.admin
   });
 };
 
@@ -67,6 +64,8 @@ exports.show = function (req, res) {
  */
 
 exports.login = function (req, res) {
+  if (req.user) return res.redirect('/');
+
   res.render('admins/login', {
     title: 'Login'
   });
@@ -112,23 +111,21 @@ function login(req, res) {
  * List
  */
 
-exports.list = async(function* (req, res) {
+exports.list = function (req, res) {
   const page = (req.query.page > 0 ? req.query.page : 1) - 1;
   const limit = req.query.limit || constant.pageLimit;
-  const _id = req.query.item;
-  const options = {
-    limit,
-    page
-  };
-
-  if (_id) options.criteria = { _id };
-
-  const admins = yield Admin.list(options);
-  const count = yield Admin.countDocuments();
-  res.render('admins/list', {
-    title: 'Administrators',
-    admins,
-    page: page + 1,
-    pages: Math.ceil(count / limit)
-  });
-});
+  Admin
+    .scan()
+    //.limit(limit)
+    .attributes('id name email'.split(' '))
+    .loadAll()
+    .exec((err, result) => {
+      if (err) return next(err);
+      res.render('admins/list', {
+        title: 'Administrators',
+        admins: result.Items.slice(limit * page, limit),
+        page: page + 1,
+        pages: Math.ceil(result.Count / limit)
+      });
+    });
+};

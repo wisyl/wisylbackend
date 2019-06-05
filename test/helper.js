@@ -4,8 +4,7 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
-const Admin = mongoose.model('Admin');
+const Admin = require('../app/models/Admin');
 const co = require('co');
 
 /**

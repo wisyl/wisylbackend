@@ -4,9 +4,8 @@
  * Module dependencies.
  */
 
-const mongoose = require('mongoose');
 const LocalStrategy = require('passport-local').Strategy;
-const Admin = mongoose.model('Admin');
+const Admin = require('../../app/models/Admin');
 
 /**
  * Expose
@@ -19,8 +18,8 @@ module.exports = new LocalStrategy(
   },
   function (email, password, done) {
     const options = {
-      criteria: { email: email },
-      select: 'name email hashed_password salt'
+      email: email,
+      attributes: 'id name email hashed_password salt'.split(' ')
     };
     Admin.load(options, function (err, admin) {
       if (err) return done(err);
